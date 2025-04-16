@@ -6,11 +6,19 @@ using System.Threading.Tasks;
 using HomeKit.Resources;
 using HomeKit.Services;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace HomeKit.Server.HostingApp
 {
     internal class ExampleSwitches : BackgroundService
     {
+        private readonly ILogger m_Logger;
+
+        public ExampleSwitches(ILogger<ExampleSwitches> logger)
+        {
+            m_Logger = logger;
+        }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             // create accessory
@@ -24,13 +32,15 @@ namespace HomeKit.Server.HostingApp
             // accessory.Services.Add(someService);
 
             // log value on change
-            switch1.On.Changed += (sender, newValue) => Console.WriteLine($"switch1: {newValue}");
-            switch2.On.Changed += (sender, newValue) => Console.WriteLine($"switch2: {newValue}");
+            switch1.On.Changed += (_, newValue) => m_Logger.LogInformation($"Switch 1 was set to: {newValue}");
+            switch2.On.Changed += (_, newValue) => m_Logger.LogInformation($"Switch 2 was set to: {newValue}");
 
             await accessory.PublishAsync(new AccessoryServerOptions()
             {
-                // optional persistent mac address
+                // persistent mac address
                 MacAddress = "11:11:11:11:11:11",
+                // persistent port
+                Port = 60611
                 // other options:
                 // IpAddress = "0.0.0.0"
                 // StateDirectory = "/mnt/custom_state_directory"

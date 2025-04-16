@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace HomeKit.Server.HostingApp
 {
@@ -9,9 +10,16 @@ namespace HomeKit.Server.HostingApp
         {
             var builder = Host.CreateDefaultBuilder(args);
 
+            builder.ConfigureLogging(logging =>
+            {
+                logging.ClearProviders();
+                logging.AddConsole();
+            });
+
             builder.ConfigureServices((context, services) =>
             {
                 services.AddHostedService<ExampleSwitches>();
+                services.AddHostedService<ExampleBridge>();
             });
 
             var host = builder.Build();

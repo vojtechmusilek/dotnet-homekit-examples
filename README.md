@@ -6,5 +6,6 @@ Examples for https://github.com/vojtechmusilek/dotnet-homekit
 
 - uses [Microsoft.Extensions.Hosting](https://www.nuget.org/packages/microsoft.extensions.hosting)
 - uses [HomeKit.Server](https://www.nuget.org/packages/HomeKit.Server)
-- has background service registered in [Program.cs](./HomeKit.Server.HostingApp/Program.cs)
-- [ExampleSwitches.cs](./HomeKit.Server.HostingApp/ExampleSwitches.cs) contains accessory creation and publishing
+- [Program.cs](./HomeKit.Server.HostingApp/Program.cs) - basic hosting app setup with example hosting services registered
+- [ExampleSwitches.cs](./HomeKit.Server.HostingApp/ExampleSwitches.cs) - accessory with 2 switches
+- [ExampleBridge.cs](./HomeKit.Server.HostingApp/ExampleBridge.cs) - bridge with 2 accessories: switch and fan
