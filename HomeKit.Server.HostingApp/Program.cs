@@ -14,6 +14,7 @@ namespace HomeKit.Server.HostingApp
             {
                 logging.ClearProviders();
                 logging.AddConsole();
+                logging.AddFilter("HomeKit.Mdns.MdnsClient", LogLevel.Warning);
             });
 
             builder.ConfigureServices((context, services) =>

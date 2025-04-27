@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Channels;
-using System.Threading.Tasks;
-using HomeKit.Resources;
-using HomeKit.Services;
+﻿using HomeKit.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -14,10 +7,12 @@ namespace HomeKit.Server.HostingApp
     internal class ExampleBridge : BackgroundService
     {
         private readonly ILogger m_Logger;
+        private readonly ILoggerFactory m_LoggerFactory;
 
-        public ExampleBridge(ILogger<ExampleBridge> logger)
+        public ExampleBridge(ILogger<ExampleBridge> logger, ILoggerFactory loggerFactory)
         {
             m_Logger = logger;
+            m_LoggerFactory = loggerFactory;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -28,15 +23,15 @@ namespace HomeKit.Server.HostingApp
             // create switch
             var switchAccessory = new Accessory("Switch");
             var switchService = switchAccessory.AddService<SwitchService>();
-            switchService.On.Changed += (_, newValue) => m_Logger.LogInformation($"Switch was set to: {newValue}");
+            switchService.On.Subscribe((_, newValue) => m_Logger.LogInformation("Switch was set to: {newValue}", newValue));
 
             // create fan
             var fanAccessory = new Accessory("Fan");
             var fanService = fanAccessory.AddService<Fanv2Service>();
-            fanService.Active.Changed += (_, newValue) => m_Logger.LogInformation($"Fan active was set to: {newValue}");
+            fanService.Active.Subscribe((_, newValue) => m_Logger.LogInformation("Fan active was set to: {newValue}", newValue));
 
             fanService.AddRotationSpeed(0);
-            fanService.RotationSpeed.Changed += (_, newValue) => m_Logger.LogInformation($"Fan rotation speed was set to: {newValue}");
+            fanService.RotationSpeed.Subscribe((_, newValue) => m_Logger.LogInformation("Fan rotation speed was set to: {newValue}", newValue));
 
             // add to bridge
             bridge.Accessories.Add(switchAccessory);
@@ -44,10 +39,12 @@ namespace HomeKit.Server.HostingApp
 
             await bridge.PublishAsync(new AccessoryServerOptions()
             {
+                // optional logger factory for detailed log
+                LoggerFactory = m_LoggerFactory,
                 // optional persistent mac address
                 MacAddress = "11:11:11:11:11:22",
                 // persistent port
-                Port = 60622
+                // Port = 60622
                 // other options:
                 // IpAddress = "0.0.0.0"
                 // StateDirectory = "/mnt/custom_state_directory"
